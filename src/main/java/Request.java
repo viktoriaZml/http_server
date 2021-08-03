@@ -2,6 +2,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Request {
   private String method;
@@ -34,10 +35,11 @@ public class Request {
   }
 
   public String getQueryParam(String name) {
-    for (var i = 0; i < params.size(); i++) {
-      if (params.get(i).getName().equals(name))
-        return params.get(i).getValue();
-    }
-    return null;
+    /*for (NameValuePair param : params){
+      if (param.getName().equals(name))
+        return param.getValue();
+    }*/
+    Map<String, String> paramMap = params.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+    return paramMap.get(name);
   }
 }
