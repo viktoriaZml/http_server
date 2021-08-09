@@ -7,10 +7,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.Socket;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class Connection implements Runnable {
   private final Socket socket;
@@ -49,15 +49,16 @@ public class Connection implements Runnable {
     }
   }
 
-  public List<NameValuePair> getQueryParams(String str) {
+  public Map<String, String> getQueryParams(String str) {
     int pos = str.indexOf("?");
-    List<NameValuePair> params = new ArrayList<>();
     if (pos > 0) {
       str = str.substring(pos + 1);
-      params = URLEncodedUtils.parse(str, Charset.defaultCharset(), '&');
+      List<NameValuePair> params = URLEncodedUtils.parse(str, Charset.defaultCharset(), '&');
       //System.out.println(params);
+      Map<String,String> paramMap = params.stream().collect(Collectors.toMap(NameValuePair::getName, NameValuePair::getValue));
+      return paramMap;
     }
-    return params;
+    return new HashMap<>();
   }
 
   public Request readRequest(BufferedReader reader) throws IOException {
